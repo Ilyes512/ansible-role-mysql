@@ -1,0 +1,55 @@
+---
+- name: Mysql | Install Mysql packages
+  sudo: yes
+  apt:
+    pkg: "{{ item }}"
+    update_cache: yes
+    cache_valid_time: 3600
+    state: present
+  with_items:
+    - mysql-server
+    - mysql-client
+    - python-mysqldb
+
+- name: Mysql | Update root password for all root accounts
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    check_implicit_admin: yes
+    password: "{{ mysql_root_password }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+  with_items:
+    - "{{ ansible_hostname }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: Mysql | Create databases
+  mysql_db:
+    name: "{{ item }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+  with_items: mysql_databases
+
+- name: Mysql | Create users
+  mysql_user:
+    name: "{{ item.user }}"
+    password: "{{ item.password }}"
+    priv: "{{ item.privilege | default('*.*:ALL') }}"
+    host: "%"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+  with_items: mysql_users
+
+- name: Mysql | Allow all remote connections
+  sudo: yes
+  lineinfile:
+    dest: /etc/mysql/my.cnf
+    regexp: "^bind-address.*"
+    line: bind-address = 0.0.0.0
+    state: present
+  notify: restart mysql

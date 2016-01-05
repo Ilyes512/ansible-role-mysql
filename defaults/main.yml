@@ -1,0 +1,6 @@
+---
+mysql_root_password: secure
+mysql_databases:
+  - local
+mysql_users:
+  - { user: 'local', password: 'secure' }
