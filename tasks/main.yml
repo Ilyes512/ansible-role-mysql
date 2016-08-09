@@ -1,6 +1,6 @@
 ---
-- name: Mysql | Install Mysql packages
-  sudo: yes
+- name: Install Mysql packages
+  become: yes
   apt:
     pkg: "{{ item }}"
     update_cache: yes
@@ -11,7 +11,7 @@
     - mysql-client
     - python-mysqldb
 
-- name: Mysql | Update root password for all root accounts
+- name: Update root password for all root accounts
   mysql_user:
     name: root
     host: "{{ item }}"
@@ -26,7 +26,7 @@
     - ::1
     - localhost
 
-- name: Mysql | Create databases
+- name: Create databases
   mysql_db:
     name: "{{ item }}"
     login_user: root
@@ -34,7 +34,7 @@
     state: present
   with_items: mysql_databases
 
-- name: Mysql | Create users
+- name: Create users
   mysql_user:
     name: "{{ item.user }}"
     password: "{{ item.password }}"
@@ -45,8 +45,8 @@
     state: present
   with_items: mysql_users
 
-- name: Mysql | Allow all remote connections
-  sudo: yes
+- name: Allow all remote connections
+  become: yes
   lineinfile:
     dest: /etc/mysql/my.cnf
     regexp: "^bind-address.*"
