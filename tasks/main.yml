@@ -1,4 +1,12 @@
 ---
+- set_fact:
+    mysql_conf_path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    when: ansible_distribution_releas == 'xenial'
+
+- set_fact:
+    mysql_conf_path: /etc/mysql/my.cnf
+    when: ansible_distribution_releas != 'xenial'
+
 - name: Install Mysql packages
   become: yes
   apt:
@@ -51,7 +59,7 @@
 - name: Allow all remote connections
   become: yes
   lineinfile:
-    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    dest: "{{ mysql_conf_path }}"
     regexp: "^bind-address.*"
     line: bind-address = 0.0.0.0
     state: present
@@ -61,7 +69,7 @@
 - name: Deny all remote connections
   become: yes
   lineinfile:
-    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    dest: "{{ mysql_conf_path }}"
     regexp: "^bind-address.*"
     line: bind-address = 127.0.0.1
     state: present
