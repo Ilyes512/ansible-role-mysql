@@ -37,6 +37,7 @@
   with_items: "{{ mysql_databases }}"
 
 - name: Create users
+  become: yes
   mysql_user:
     name: "{{ item.user }}"
     password: "{{ item.password }}"
