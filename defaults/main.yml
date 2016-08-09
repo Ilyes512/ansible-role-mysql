@@ -4,3 +4,4 @@ mysql_databases:
   - local
 mysql_users:
   - { user: 'local', password: 'secure', privilege: '*.*:ALL' } # privilege is optional (defaults to '*.*:ALL')
+mysql_allow_remote: false

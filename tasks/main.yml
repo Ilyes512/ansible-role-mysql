@@ -51,8 +51,19 @@
 - name: Allow all remote connections
   become: yes
   lineinfile:
-    dest: /etc/mysql/my.cnf
+    dest: /etc/mysql/mysql.conf.d/mysqld.conf
     regexp: "^bind-address.*"
     line: bind-address = 0.0.0.0
     state: present
   notify: restart mysql
+  when: mysql_allow_remote
+
+- name: Deny all remote connections
+  become: yes
+  lineinfile:
+    dest: /etc/mysql/mysql.conf.d/mysqld.conf
+    regexp: "^bind-address.*"
+    line: bind-address = 127.0.0.1
+    state: present
+  notify: restart mysql
+  when: not mysql_allow_remote
