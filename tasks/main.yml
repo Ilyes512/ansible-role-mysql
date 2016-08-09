@@ -1,11 +1,11 @@
 ---
 - set_fact:
     mysql_conf_path: /etc/mysql/mysql.conf.d/mysqld.cnf
-    when: ansible_distribution_releas == 'xenial'
+  when: ansible_distribution_release == "xenial"
 
 - set_fact:
     mysql_conf_path: /etc/mysql/my.cnf
-    when: ansible_distribution_releas != 'xenial'
+  when: ansible_distribution_release != "xenial"
 
 - name: Install Mysql packages
   become: yes
